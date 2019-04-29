@@ -46,9 +46,9 @@ public class Instruction{
 	build.append(MNEMONICS.get(opcode/8));
 	build.append("  ");
 	int flags = opcode & 6;
-	if(flags == 2) build.append('m');
-	if(flags == 4) build.append('n');
-	if(flags == 6) build.append('a');
+	if(flags == 2) build.append('M');
+	if(flags == 4) build.append('N');
+	if(flags == 6) build.append('A');
 	build.append(Integer.toString(arg, 16));
 	return build.toString().toUpperCase();
     }
