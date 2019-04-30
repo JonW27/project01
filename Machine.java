@@ -211,7 +211,7 @@ public class Machine{
 	    });
     }
 	    
-    public int[] getData(){
+    int[] getData(){
 	return memory.getData();
     }
 
@@ -219,7 +219,7 @@ public class Machine{
 	return memory.getData(i);
     }
 
-    public int[] getData(int i, int j){
+    int[] getData(int i, int j){
 	return memory.getData(i, j);
     }
 
@@ -246,6 +246,50 @@ public class Machine{
     public void halt(){
 	callBack.halt();
     }
+
+    public Instruction getCode(int index){
+	return memory.getCode(index);
+    }
+
+    public int getProgramSize(){
+	return memory.getProgramSize();
+    }
+
+    public void addCode(Instruction j){
+	memory.addCode(j);
+    }
+
+    void setCode(int index, Instruction instr){
+	memory.setCode(index, instr);
+    }
+
+    public List<Instruction> getCode(){
+	return memory.getCode();
+    }
+
+    Instruction[] getCode(int i, int j){
+	return memory.getCode(i, j);
+    }
+
+    public int getChangedDataIndex(){
+	return memory.getChangedDataIndex();
+    }
+
+    public void clear(){
+	memory.clearData();
+	memory.clearCode();
+	cpu.pc = 0;
+	cpu.accum = 0;
+    }
+
+    public void step(){
+	try{
+	    Instruction instr = memory.getCode(cpu.pc);
+	    Instruction.checkParity(instr);
+	    ACTION.get(instr.opcode/8).accept(instr);
+	} catch(Exception e){
+	    e.printStackTrace();
+	}
 }
 
 
