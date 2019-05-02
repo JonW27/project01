@@ -1,4 +1,4 @@
-package project01;
+package project;
 
 import java.io.DataOutputStream;
 import java.io.File;
