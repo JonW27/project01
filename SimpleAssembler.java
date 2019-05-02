@@ -67,6 +67,31 @@ public class SimpleAssembler implements Assembler {
 			e.printStackTrace();
 		}
 		lists.get(false).remove("DATA");
+		List<Instruction> outputCode = lists.get(true).stream()
+				.map(line -> line.split("\\s+"))
+				.map(this::makeCode) // note how we use an instance method
+				.collect(Collectors.toList());
+		List<DataPair> outputData = lists.get(false).stream()
+				.map(line -> line.split( "\\s+" ))
+				.map( this::makeData)
+				.collect(Collectors.toList()) ;
+		
+		try {
+			DataOutputStream out = new DataOutputStream( new FileOutputStream( new File( outputFileName ))) ;
+			for( Instruction instr : outputCode ) {
+				out.writeInt( instr.opcode);
+				out.writeInt(instr.arg);
+			}
+			out.writeInt( -1 );
+			for( DataPair pair : outputData ) {
+				out.writeInt( pair.address);
+				out.writeInt(pair.value);
+			}
+			out.close();
+		}
+		catch( FileNotFoundException e || IOException e ) {
+			
+		}
 	}
 	
 }
