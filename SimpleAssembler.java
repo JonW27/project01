@@ -89,9 +89,26 @@ public class SimpleAssembler implements Assembler {
 			}
 			out.close();
 		}
-		catch( FileNotFoundException e || IOException e ) {
-			
+		catch( FileNotFoundException e ) {
+			e.printStackTrace() ;
 		}
+		catch( IOException e ) {
+			e.printStackTrace();
+		}
+		
+		return 0 ;
+	}
+	
+	public static void main( String[] args ) {
+		StringBuilder error = new StringBuilder() ;
+		System.out.println( "Enter the name of the file without extension: ") ;
+		// TYPE IN factorial
+	    try (Scanner keyboard = new Scanner(System.in)) { 
+	        String filename = keyboard.nextLine();
+	        int i = new SimpleAssembler().assemble(filename + ".pasm", 
+	                filename + ".pexe", error);
+	        System.out.println("result = " + i);
+	  }
 	}
 	
 }
