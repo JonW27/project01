@@ -2,6 +2,7 @@ package project;
 
 import static project.Instruction.OPCODES;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -236,11 +237,11 @@ public class Machine{
     }
 
     public void setAccum(int i){
-	cpu.accum = i;
+    	cpu.accum = i;
     }
 
     public void setPC(int i){
-	cpu.pc = i;
+    	cpu.pc = i;
     }
 
     public void halt(){
@@ -248,48 +249,48 @@ public class Machine{
     }
 
     public Instruction getCode(int index){
-	return memory.getCode(index);
+    	return memory.getCode(index);
     }
 
     public int getProgramSize(){
-	return memory.getProgramSize();
+    	return memory.getProgramSize();
     }
 
     public void addCode(Instruction j){
-	memory.addCode(j);
+    	memory.addCode(j);
     }
 
     void setCode(int index, Instruction instr){
-	memory.setCode(index, instr);
+    	memory.setCode(index, instr);
     }
 
     public List<Instruction> getCode(){
-	return memory.getCode();
+    	return memory.getCode();
     }
 
     Instruction[] getCode(int i, int j){
-	return memory.getCode(i, j);
+    	return memory.getCode(i, j);
     }
 
     public int getChangedDataIndex(){
-	return memory.getChangedDataIndex();
+    	return memory.getChangedDataIndex();
     }
 
     public void clear(){
-	memory.clearData();
-	memory.clearCode();
-	cpu.pc = 0;
-	cpu.accum = 0;
+		memory.clearData();
+		memory.clearCode();
+		cpu.pc = 0;
+		cpu.accum = 0;
     }
 
     public void step(){
-	try{
-	    Instruction instr = memory.getCode(cpu.pc);
-	    Instruction.checkParity(instr);
-	    ACTION.get(instr.opcode/8).accept(instr);
-	} catch(Exception e){
-	    e.printStackTrace();
-	}
+    	try{
+    		Instruction instr = memory.getCode(cpu.pc);
+    		Instruction.checkParity(instr);
+    		ACTION.get(instr.opcode/8).accept(instr);
+    	} catch(Exception e){
+    		e.printStackTrace();
+    	}
+
+    }
 }
-
-

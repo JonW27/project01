@@ -18,7 +18,7 @@ public class Loader{
 
 	try(DataInputStream input = new DataInputStream(new FileInputStream(file))){
 	    while(true){
-		x = input.readInt();
+		int x = input.readInt();
 		if(flag && x == -1){
 		    flag = !flag;
 		} else if(flag){
@@ -38,7 +38,7 @@ public class Loader{
     }
 
     public static void main(String[] args){
-	Machine machine = Machine(() -> System.exit(0));
+	Machine machine = new Machine(() -> System.exit(0));
 
 	String str = Loader.load(machine, new File("factorial.pexe"));
 	int total = Integer.parseInt(str);

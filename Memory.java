@@ -48,8 +48,11 @@ public class Memory{
     }
 
     public Instruction[] getCode(int min, int max){
-	isValidCodeIndex(index);
-	Instruction[] temp = {};
+	// isValidCodeIndex(index); // index is not a local var
+	if( 0 > min || min > max || max >= code.size() ) {
+		throw new CodeAccessException( "Illegal access to code." ) ;
+	}
+    Instruction[] temp = {};
 	temp = code.toArray(temp);
 	return Arrays.copyOfRange(temp, min, max);
     }
