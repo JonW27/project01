@@ -38,5 +38,8 @@ public class ControlPanel {
 		
 		return panel;
 	}
+	public void update() {
+		
+	}
 	
 }
