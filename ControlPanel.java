@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 public class ControlPanel {
 	private Mediator mediator;
@@ -25,6 +26,17 @@ public class ControlPanel {
 		stepButton.setBackground(Color.WHITE);
 		stepButton.addActionListener(e -> mediator.step());
 		panel.add(stepButton);
+		
+		clearButton.addActionListener(e -> mediator.clear());
+		runButton.addActionListener(e -> mediator.toggleAutoStep());
+		reloadButton.addActionListener(e -> mediator.reload());
+		
+		JSlider slider = new JSlider(5,1000);
+		slider.addChangeListener(e -> mediator.setPeriod(slider.getValue())); 
+		// put a void method setPeriod(int value) in Mediator, we will complete it later
+		panel.add(slider);
+		
+		return panel;
 	}
 	
 }
