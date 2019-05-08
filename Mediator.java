@@ -12,6 +12,18 @@ public class Mediator {
 	public void step() {
 		
 	}
+	
+	public void clear() {
+		
+	}
+	
+	public void toggleAutoStep() {
+		
+	}
+	
+	public void reload() {
+		
+	}
 
 	public Machine getMachine() {
 		return machine;
