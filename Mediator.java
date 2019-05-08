@@ -36,4 +36,8 @@ public class Mediator {
 	public JFrame getFrame() {
 		return frame;
 	}
+	
+	public void setPeriod(int value) {
+		
+	}
 }
