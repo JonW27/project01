@@ -1,6 +1,5 @@
 package projectview;
 
-import project.* ;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -15,6 +14,7 @@ import project.CodeAccessException;
 import project.DivideByZeroException;
 import project.IllegalInstructionException;
 import project.Machine;
+import project.Memory;
 import project.ParityCheckException;
 
 public class Mediator {
@@ -52,11 +52,11 @@ public class Mediator {
 				machine.step();
 			} catch (CodeAccessException e) {
 				JOptionPane.showMessageDialog(frame, 
-					"Illegal access to code from line " + model.getPC() + "\n"
+					"Illegal access to code from line " + machine.getPC() + "\n"
 							+ "Exception message: " + e.getMessage(),
 							"Run time error",
 							JOptionPane.OK_OPTION);
-				System.out.println("Illegal access to code from line " + model.getPC()); // just for debugging
+				System.out.println("Illegal access to code from line " + machine.getPC()); // just for debugging
 				System.out.println("Exception message: " + e.getMessage()); // just for debugging			
 			} catch(ArrayIndexOutOfBoundsException e) {
 				// similar JOPtionPane
@@ -177,7 +177,7 @@ public class Mediator {
 		//frame.addWindowListener(WindowListenerFactory.windowClosingFactory(e -> exit()));
 		frame.setLocationRelativeTo(null);
 		tUnit.start();
-		currentState().enter();
+		currentState.enter();
 		frame.setVisible(true);
 		notify("");
 	}
@@ -198,13 +198,18 @@ public class Mediator {
 				machine.step();
 			} catch (CodeAccessException e) {
 				JOptionPane.showMessageDialog(frame, 
-					"Illegal access to code from line " + model.getPC() + "\n"
+					"Illegal access to code from line " + machine.getPC() + "\n"
 							+ "Exception message: " + e.getMessage(),
 							"Run time error",
 							JOptionPane.OK_OPTION);
-				System.out.println("Illegal access to code from line " + model.getPC()); // just for debugging
+				System.out.println("Illegal access to code from line " + machine.getPC()); // just for debugging
 				System.out.println("Exception message: " + e.getMessage()); // just for debugging			
 			} catch(ArrayIndexOutOfBoundsException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"Illegal access to code from line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 				// similar JOPtionPane
 	// YOU HAVE TO FILL OUT ALL THESE CATCH BLOCKS WITH DIFFERENT MESSAGES
 			} catch(NullPointerException e) {
