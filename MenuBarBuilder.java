@@ -55,7 +55,7 @@ public class MenuBarBuilder {
 		return menu;
 	}
 	
-	public JMenu createExeccuteMenu() {
+	public JMenu createExecuteMenu() {
 		JMenu menu = new JMenu("Execute");
 		menu.setMnemonic(KeyEvent.VK_X);
 		
