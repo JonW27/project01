@@ -18,7 +18,7 @@ public class SimpleAssembler implements Assembler {
 	
 	private Instruction makeCode( String[] parts ) {
 		Instruction instr = null ;
-		if( noArgument.contains( parts[0] )) {
+		if( Instruction.NO_ARG_MNEMONICS.contains( parts[ 0 ])) {
 			int opPart = 8 * Instruction.OPCODES.get( parts[0] ) ;
 			opPart += Instruction.numOnes( opPart ) % 2 ;
 			instr = new Instruction((byte)opPart, 0 ) ;
@@ -33,7 +33,7 @@ public class SimpleAssembler implements Assembler {
 				flags = 4 ;
 				parts[1] = parts[1].substring(1) ;
 			}
-			else if( parts[1].charAt(0) == 'A' ) {
+			else if( parts[1].charAt(0) == 'J' ) {
 				flags = 6 ;
 				parts[1] = parts[1].substring(1) ;
 			}
@@ -63,7 +63,8 @@ public class SimpleAssembler implements Assembler {
 				.collect(Collectors.partitioningBy(line -> readingCode));
 //				System.out.println("true List " + lists.get(true)); // these lines can be uncommented 
 //				System.out.println("false List " + lists.get(false)); // for checking the code
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		lists.get(false).remove("DATA");

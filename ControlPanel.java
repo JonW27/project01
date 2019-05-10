@@ -38,8 +38,12 @@ public class ControlPanel {
 		
 		return panel;
 	}
+	//@Override
 	public void update() {
-		
+		runButton.setEnabled(mediator.getCurrentState().getRunPauseActive());
+		stepButton.setEnabled(mediator.getCurrentState().getStepActive());
+		clearButton.setEnabled(mediator.getCurrentState().getClearActive());
+		reloadButton.setEnabled(mediator.getCurrentState().getReloadActive());		
 	}
 	
 }
