@@ -59,18 +59,42 @@ public class Mediator {
 				System.out.println("Illegal access to code from line " + machine.getPC()); // just for debugging
 				System.out.println("Exception message: " + e.getMessage()); // just for debugging			
 			} catch(ArrayIndexOutOfBoundsException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 	// YOU HAVE TO FILL OUT ALL THESE CATCH BLOCKS WITH DIFFERENT MESSAGES
 			} catch(NullPointerException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"NullPointerException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(ParityCheckException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"ParityCheckException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(IllegalInstructionException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalInstructionException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(IllegalArgumentException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalArgumentException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(DivideByZeroException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"DivideByZeroException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			}
 			notify("");
 		}
@@ -191,7 +215,7 @@ public class Mediator {
 		ioUnit.loadFile();
 	}
 	
-	public void execute() {
+public void execute() {
 		while (currentState != States.PROGRAM_HALTED && 
 				currentState != States.NOTHING_LOADED) {
 			try {
@@ -213,15 +237,35 @@ public class Mediator {
 				// similar JOPtionPane
 	// YOU HAVE TO FILL OUT ALL THESE CATCH BLOCKS WITH DIFFERENT MESSAGES
 			} catch(NullPointerException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"NullPointerException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(ParityCheckException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"ParityCheckException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(IllegalInstructionException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalInstructionException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(IllegalArgumentException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalArgumentException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			} catch(DivideByZeroException e) {
-				// similar JOPtionPane
+				JOptionPane.showMessageDialog(frame, 
+						"DivideByZeroException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			}
 			
 		}
