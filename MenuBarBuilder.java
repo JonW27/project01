@@ -35,12 +35,18 @@ public class MenuBarBuilder {
 		assemble.setMnemonic(KeyEvent.VK_M);
 		assemble.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_M, ActionEvent.CTRL_MASK));
+		//assemble.setMnemonic(KeyEvent.VK_M);
+		assemble.setAccelerator(KeyStroke.getKeyStroke(
+			KeyEvent.VK_M, ActionEvent.ALT_MASK));
+		//assemble.setMnemonic(KeyEvent.VK_F);
+		assemble.setAccelerator(KeyStroke.getKeyStroke(
+			KeyEvent.VK_F, ActionEvent.ALT_MASK));
 		assemble.addActionListener(e -> mediator.assembleFile());
 		menu.add(assemble);
 		
 		//JMenuItem load = new JMenuItem("Load Program...");
 		load.setMnemonic(KeyEvent.VK_L);
-		load.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK)); // have to change CTRL_MASK maybe
+		load.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK)); 
 		load.addActionListener(e -> mediator.loadFile()); 
 		menu.add(load);
 		
