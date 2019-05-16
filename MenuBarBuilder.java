@@ -31,7 +31,7 @@ public class MenuBarBuilder {
 		JMenu menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		
-		JMenuItem assemble = new JMenuItem("Assemble Source...");
+		//JMenuItem assemble = new JMenuItem("Assemble Source...");
 		assemble.setMnemonic(KeyEvent.VK_M);
 		assemble.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_M, ActionEvent.CTRL_MASK));
@@ -44,7 +44,7 @@ public class MenuBarBuilder {
 		assemble.addActionListener(e -> mediator.assembleFile());
 		menu.add(assemble);
 		
-		JMenuItem load = new JMenuItem("Load Program...");
+		//JMenuItem load = new JMenuItem("Load Program...");
 		load.setMnemonic(KeyEvent.VK_L);
 		load.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK)); 
 		load.addActionListener(e -> mediator.loadFile()); 
@@ -52,7 +52,7 @@ public class MenuBarBuilder {
 		
 		menu.addSeparator();
 		
-		JMenuItem exit = new JMenuItem("Exit");
+		//JMenuItem exit = new JMenuItem("Exit");
 		exit.setMnemonic(KeyEvent.VK_E);
 		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		exit.addActionListener(e -> mediator.exit()); // have to change this part
@@ -68,7 +68,7 @@ public class MenuBarBuilder {
 		go.setMnemonic(KeyEvent.VK_G);
 		go.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 		go.addActionListener(e -> mediator.execute()); // not sure if right
-		menu.add(load);
+		menu.add(go);
 		return menu;
 	}
 
