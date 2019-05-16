@@ -32,15 +32,15 @@ public class MenuBarBuilder {
 		menu.setMnemonic(KeyEvent.VK_F);
 		
 		//JMenuItem assemble = new JMenuItem("Assemble Source...");
-		assemble.setMnemonic(KeyEvent.VK_M);
-		assemble.setAccelerator(KeyStroke.getKeyStroke(
-			KeyEvent.VK_M, ActionEvent.CTRL_MASK));
 		//assemble.setMnemonic(KeyEvent.VK_M);
 		assemble.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_M, ActionEvent.ALT_MASK));
 		//assemble.setMnemonic(KeyEvent.VK_F);
 		assemble.setAccelerator(KeyStroke.getKeyStroke(
 			KeyEvent.VK_F, ActionEvent.ALT_MASK));
+		assemble.setMnemonic(KeyEvent.VK_M);
+		assemble.setAccelerator(KeyStroke.getKeyStroke(
+			KeyEvent.VK_M, ActionEvent.CTRL_MASK));
 		assemble.addActionListener(e -> mediator.assembleFile());
 		menu.add(assemble);
 		
