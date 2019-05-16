@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Memory{
     public static final int DATA_SIZE = 512;
-    private static final int CODE_SIZE = 256;
+    public static final int CODE_SIZE = 256;
     
     private int[] data = new int[DATA_SIZE];
     private List<Instruction> code = new ArrayList<>();

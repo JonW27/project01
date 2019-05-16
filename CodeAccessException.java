@@ -1,7 +1,10 @@
 package project;
 
 public class CodeAccessException extends RuntimeException{
-    public CodeAccessException(String msg){
-	super(msg);
-    }
+	public CodeAccessException( ) {
+		super() ;
+	}
+	public CodeAccessException(String arg ) {
+		super( arg ) ;
+	}
 }

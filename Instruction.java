@@ -35,11 +35,11 @@ public class Instruction{
 	entry("MUL", 12), entry("DIV", 13)
     );
 
+    public static final Set<String> NO_ARG_MNEMONICS = Set.of("NOP", "NOT", "HALT"); 
+    public static final Set<String> IMM_MNEMONICS = Set.of("LOD", "ADD", "SUB", "MUL", "DIV", "AND", "JUMP", "JMPZ");
+    public static final Set<String> IND_MNEMONICS = Set.of("LOD", "ADD", "SUB", "MUL", "DIV", "JUMP", "JMPZ", "STO");
     public static final Set<String> JMP_MNEMONICS = Set.of("JUMP", "JMPZ");
-    public static final Set<String> NO_ARG_MNEMONICS = Set.of("NOP", "NOT", "HALT");
-    public static final Set<String> IND_MNEMONICS = Set.of("STO", "CMPL", "CMPZ");
-    public static final Set<String> IMM_IND_MNEMONICS = Set.of("LOD", "ADD", "SUB", "MUL", "DIV", "AND");
-
+     
 
     public String getText() {
 	StringBuilder build = new StringBuilder();
@@ -48,7 +48,7 @@ public class Instruction{
 	int flags = opcode & 6;
 	if(flags == 2) build.append('M');
 	if(flags == 4) build.append('N');
-	if(flags == 6) build.append('A');
+	if(flags == 6) build.append('J');
 	build.append(Integer.toString(arg, 16));
 	return build.toString().toUpperCase();
     }

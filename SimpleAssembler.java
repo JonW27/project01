@@ -52,30 +52,32 @@ public class SimpleAssembler implements Assembler {
 							 Integer.parseInt( parts[1], 16 )) ;
 	}
 	
-	public int assemble( String inputFileName, String outputFileName, StringBuilder error ) {
-		Map<Boolean, List<String>> lists = null;
-		try (Stream<String> lines = Files.lines(Paths.get(inputFileName))) {
-			lists = lines
-				.filter(line -> line.trim().length() > 0)
-				.map(line -> line.trim())
-				.peek(line -> {if(line.toUpperCase().equals("DATA")) readingCode = false;})
-				.map(line -> line.trim())
-				.collect(Collectors.partitioningBy(line -> readingCode));
-//				System.out.println("true List " + lists.get(true)); // these lines can be uncommented 
-//				System.out.println("false List " + lists.get(false)); // for checking the code
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		lists.get(false).remove("DATA");
-		List<Instruction> outputCode = lists.get(true).stream()
-				.map(line -> line.split("\\s+"))
-				.map(this::makeCode) // note how we use an instance method
-				.collect(Collectors.toList());
+	@Override
+	public int assemble(String inputFileName, String outputFileName, StringBuilder error) {
+       	Map<Boolean, List<String>> lists = null;
+       	try (Stream<String> lines = Files.lines(Paths.get(inputFileName))) {
+       		lists = lines
+       			.filter(line -> line.trim().length() > 0)
+       			.map(line -> line.trim())
+       			.peek(line -> {if(line.toUpperCase().equals("DATA")) readingCode = false;})
+       			.map(line -> line.trim())
+       			.collect(Collectors.partitioningBy(line -> readingCode));
+       			//	System.out.println("true List " + lists.get(true)); // these lines can be uncommented 
+       			//	System.out.println("false List " + lists.get(false)); // for checking the code
+       	} catch (IOException e) {
+       		e.printStackTrace();
+       	}
+       	lists.get(false).remove("DATA"); // some programs will not have DATA but that is not an error
+       	List<Instruction> outputCode = lists.get(true).stream()
+       			.map(line -> line.split("\\s+"))
+       			.map(this::makeCode) // note how we use an instance method
+       			.collect(Collectors.toList());
 		List<DataPair> outputData = lists.get(false).stream()
 				.map(line -> line.split( "\\s+" ))
 				.map( this::makeData)
 				.collect(Collectors.toList()) ;
+		System.out.println( outputCode ) ;
+		System.out.println( outputData ) ;
 		
 		try {
 			DataOutputStream out = new DataOutputStream( new FileOutputStream( new File( outputFileName ))) ;
@@ -86,7 +88,7 @@ public class SimpleAssembler implements Assembler {
 			out.writeInt( -1 );
 			for( DataPair pair : outputData ) {
 				out.writeInt( pair.address);
-				out.writeInt(pair.value);
+				out.writeInt( pair.value);
 			}
 			out.close();
 		}
@@ -100,10 +102,10 @@ public class SimpleAssembler implements Assembler {
 		return 0 ;
 	}
 	
-	public static void main( String[] args ) {
-		StringBuilder error = new StringBuilder() ;
-		System.out.println( "Enter the name of the file without extension: ") ;
-		// TYPE IN factorial
+	public static void main(String[] args) {
+	    StringBuilder error = new StringBuilder();
+	    System.out.println("Enter the name of the file without extension: ");
+	// TYPE IN factorial
 	    try (Scanner keyboard = new Scanner(System.in)) { 
 	        String filename = keyboard.nextLine();
 	        int i = new SimpleAssembler().assemble(filename + ".pasm", 
@@ -111,5 +113,4 @@ public class SimpleAssembler implements Assembler {
 	        System.out.println("result = " + i);
 	  }
 	}
-	
 }
