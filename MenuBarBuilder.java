@@ -44,7 +44,7 @@ public class MenuBarBuilder {
 		assemble.addActionListener(e -> mediator.assembleFile());
 		menu.add(assemble);
 		
-		//JMenuItem load = new JMenuItem("Load Program...");
+		JMenuItem load = new JMenuItem("Load Program...");
 		load.setMnemonic(KeyEvent.VK_L);
 		load.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK)); 
 		load.addActionListener(e -> mediator.loadFile()); 
@@ -52,11 +52,11 @@ public class MenuBarBuilder {
 		
 		menu.addSeparator();
 		
-		//JMenuItem exit = new JMenuItem("Exit")
+		JMenuItem exit = new JMenuItem("Exit");
 		exit.setMnemonic(KeyEvent.VK_E);
 		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		exit.addActionListener(e -> mediator.exit()); // have to change this part
-		menu.add(load);
+		menu.add(exit);
 		
 		return menu;
 	}
