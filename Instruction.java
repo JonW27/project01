@@ -29,7 +29,7 @@ public class Instruction{
 
     public static final Map<String, Integer> OPCODES = Map.ofEntries(
 	entry("NOP", 0), entry("NOT", 1), entry("HALT", 2),
-	entry("JUMP", 3), entry("JPMZ", 4), entry("LOD", 5),
+	entry("JUMP", 3), entry("JMPZ", 4), entry("LOD", 5),
 	entry("STO", 6), entry("AND", 7), entry("CMPL", 8),
 	entry("CMPZ", 9), entry("ADD", 10), entry("SUB", 11),
 	entry("MUL", 12), entry("DIV", 13)
@@ -53,6 +53,10 @@ public class Instruction{
 	return build.toString().toUpperCase();
     }
 
+    public String toString() {
+    	return getText();
+    }
+    
     public String getBinHex() {
 	StringBuilder build = new StringBuilder();
 	String s = "00000000" + Integer.toString(opcode,2);
