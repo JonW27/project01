@@ -10,6 +10,7 @@ import project.Machine;
 public class ProcessorViewPanel {
 	private Machine machine;
 	private JTextField acc = new JTextField(); 
+	private JTextField pcount = new JTextField(); 
 	public ProcessorViewPanel(Machine m) {
 		machine = m;
 	}
@@ -18,11 +19,15 @@ public class ProcessorViewPanel {
 		panel.setLayout(new GridLayout(1,0));
 		panel.add(new JLabel("Accumulator: ", JLabel.RIGHT));
 		panel.add(acc);
+		panel.setLayout(new GridLayout(1,0));
+		panel.add(new JLabel("Program Counter: ", JLabel.RIGHT));
+		panel.add(pcount);
 		return panel;
 	}
 	public void update() {
 		if(machine != null) {
 			acc.setText("" + machine.getAccum());
+			pcount.setText("" + machine.getPC());
 		}
 	}
 	
@@ -31,7 +36,7 @@ public class ProcessorViewPanel {
 		ProcessorViewPanel panel = new ProcessorViewPanel(machine);
 		JFrame frame = new JFrame("TEST");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(400, 60);
+		frame.setSize(700, 60);
 		frame.setLocationRelativeTo(null);
 		frame.add(panel.createProcessorDisplay());
 		frame.setVisible(true);
