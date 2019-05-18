@@ -2,127 +2,298 @@ package projectview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.io.File;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
-import project.Instruction;
-import project.Loader;
+import project.CodeAccessException;
+import project.DivideByZeroException;
+import project.IllegalInstructionException;
 import project.Machine;
 import project.Memory;
+import project.ParityCheckException;
 
-public class CodeViewPanel {
-	private Machine machine ;
-	private Instruction instr ;
-	private JScrollPane scroller ;
-	private JTextField[] codeText = new JTextField[Memory.CODE_SIZE];
-	private JTextField[] codeBinHex = new JTextField[Memory.CODE_SIZE] ;
-	int previousColor = -1 ;
+public class Mediator {
 	
-	public CodeViewPanel( Machine m ) {
-		machine = m ;
+	private Machine machine;
+	private JFrame frame;
+	private TimerUnit tUnit;
+	private CodeViewPanel codeViewPanel;
+	private MemoryViewPanel memoryViewPanel1;
+	private MemoryViewPanel memoryViewPanel2;
+	private MemoryViewPanel memoryViewPanel3;
+	private ControlPanel controlPanel;
+	private ProcessorViewPanel processorPanel;
+	private States currentState = States.NOTHING_LOADED;
+	private IOUnit ioUnit;
+	private MenuBarBuilder menuBuilder;
+	
+	public States getCurrentState() {
+		return currentState;
 	}
+
 	
-	public JComponent createCodeDisplay() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		Border border = BorderFactory.createTitledBorder(
-		        BorderFactory.createLineBorder(Color.BLACK),
-		        "Code Memory View",
-		        TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION);
-		panel.setBorder(border);
-		
-		JPanel innerPanel = new JPanel();
-		innerPanel.setLayout(new BorderLayout());
-		JPanel numPanel = new JPanel();
-		JPanel textPanel = new JPanel();
-		JPanel hexPanel = new JPanel();
-		
-		numPanel.setLayout(new GridLayout(0,1));
-		textPanel.setLayout(new GridLayout(0,1));
-		hexPanel.setLayout(new GridLayout(0,1));
-		
-		innerPanel.add(numPanel, BorderLayout.LINE_START); 
-		innerPanel.add(textPanel, BorderLayout.CENTER); 
-		innerPanel.add(hexPanel, BorderLayout.LINE_END);
-		
-		//codeBinHex = new JTextField[(upper-lower)];
-		//codeText = new JTextField[(upper-lower)];
-		
-		for(int i = 0; i < Memory.CODE_SIZE; i++) { //the for loop is from 0 to Memory.CODE_SIZE
-			numPanel.add(new JLabel(i+": ", JLabel.RIGHT));
-			codeText[i] = new JTextField(10);
-			codeBinHex[i] = new JTextField(12);
-			textPanel.add(codeText[i]); 
-			hexPanel.add(codeBinHex[i]);
-		}
-		
-		scroller =new JScrollPane(innerPanel);
-		panel.add(scroller);
-		return panel;
+	public void setCurrentState(States s) {
+		if(s == States.PROGRAM_HALTED) tUnit.setAutoStepOn(false);		
+		currentState = s;
+		s.enter();
+		notify("");
 	}
-	
-	public void update(String arg) {
-		if("Load Code".equals(arg)) {
-			for(int i = 0; i < machine.getProgramSize(); i++) {
-				instr = machine.getCode(i);
-				codeText[i].setText(instr.getText());
-				codeBinHex[i].setText(instr.getBinHex());
-			}	
-			previousColor = machine.getPC();			
-			codeBinHex[previousColor].setBackground(Color.YELLOW);
-			codeText[previousColor].setBackground(Color.YELLOW);
-		} else if("Clear".equals(arg)) {
-			for(int i = 0; i < Memory.CODE_SIZE; i++) {
-				codeText[i].setText("");
-				codeBinHex[i].setText("");
-			}	
-			if(previousColor >= 0 && previousColor < Memory.CODE_SIZE) {
-				codeText[previousColor].setBackground(Color.WHITE);
-				codeBinHex[previousColor].setBackground(Color.WHITE);
+
+
+	public void step() { 
+		if (currentState != States.PROGRAM_HALTED && 
+				currentState != States.NOTHING_LOADED) {
+			try {
+				machine.step();
+			} catch (CodeAccessException e) {
+				JOptionPane.showMessageDialog(frame, 
+					"Illegal access to code from line " + machine.getPC() + "\n"
+							+ "Exception message: " + e.getMessage(),
+							"Run time error",
+							JOptionPane.OK_OPTION);
+				System.out.println("Illegal access to code from line " + machine.getPC()); // just for debugging
+				System.out.println("Exception message: " + e.getMessage()); // just for debugging			
+			} catch(ArrayIndexOutOfBoundsException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+	// YOU HAVE TO FILL OUT ALL THESE CATCH BLOCKS WITH DIFFERENT MESSAGES
+			} catch(NullPointerException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"NullPointerException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(ParityCheckException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"ParityCheckException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(IllegalInstructionException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalInstructionException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalArgumentException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(DivideByZeroException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"DivideByZeroException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
 			}
-			previousColor = -1;
-		}		
-		if(this.previousColor >= 0 && previousColor < Memory.CODE_SIZE) {
-			codeText[previousColor].setBackground(Color.WHITE);
-			codeBinHex[previousColor].setBackground(Color.WHITE);
-		}
-		previousColor = machine.getPC();
-		if(this.previousColor >= 0 && previousColor < Memory.CODE_SIZE) {
-			codeText[previousColor].setBackground(Color.YELLOW);
-			codeBinHex[previousColor].setBackground(Color.YELLOW);
-		} 
-		if(scroller != null && instr != null && machine!= null) {
-			JScrollBar bar= scroller.getVerticalScrollBar();
-			int pc = machine.getPC();
-			if(pc >= 0 && pc < Memory.CODE_SIZE && codeBinHex[pc] != null) { 
-				Rectangle bounds = codeBinHex[pc].getBounds();
-				bar.setValue(Math.max(0, bounds.y - 15*bounds.height));
-			}
+			notify("");
 		}
 	}
 	
-	public static void main(String[] args) throws Exception {
-		Machine machine = new Machine(()->System.exit(0));
-		CodeViewPanel panel = new CodeViewPanel(machine);
+	public void clear() {
+		machine.clear();
+		setCurrentState(States.NOTHING_LOADED);
+		currentState.enter();
+		notify("Clear");
+	}
+	
+	public void toggleAutoStep() {
+		tUnit.toggleAutoStep();
+		if(tUnit.isAutoStepOn()) {
+			setCurrentState(States.AUTO_STEPPING);
+		}
+		else {
+			setCurrentState(States.PROGRAM_LOADED_NOT_AUTOSTEPPING);
+		}
+	}
+	
+	public void reload() {
+		tUnit.setAutoStepOn(false);
+		clear();
+		ioUnit.finalLoad_ReloadStep();
+	}
+	
+	public void makeReady(String s) {
+		tUnit.setAutoStepOn(false);
+		setCurrentState(States.PROGRAM_LOADED_NOT_AUTOSTEPPING);
+		currentState.enter();
+		notify(s);
+	}
+
+	public Machine getMachine() {
+		return machine;
+	}
+
+	public void setMachine(Machine machine) {
+		this.machine = machine;
+	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+	
+	public void setPeriod(int value) {
+		tUnit.setPeriod(value);
+	}
+	
+	
+	public void exit() { // method executed when user exits the program
+		int decision = JOptionPane.showConfirmDialog(
+				frame, "Do you really wish to exit?",
+				"Confirmation", JOptionPane.YES_NO_OPTION);
+		if (decision == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
+	}
+	
+	private void notify(String str) {
+		codeViewPanel.update(str);
+		memoryViewPanel1.update(str);
+		memoryViewPanel2.update(str);
+		memoryViewPanel3.update(str);
+		controlPanel.update();
+		processorPanel.update();
+	}
+	
+	private void createAndShowGUI() {
+		tUnit = new TimerUnit(this);
+		ioUnit = new IOUnit(this);
+		ioUnit.initialize();
+		codeViewPanel = new CodeViewPanel(machine);
+		memoryViewPanel1 = new MemoryViewPanel(machine, 0, 160);
+		memoryViewPanel2 = new MemoryViewPanel(machine, 160, Memory.DATA_SIZE/2);
+		memoryViewPanel3 = new MemoryViewPanel(machine, Memory.DATA_SIZE/2, Memory.DATA_SIZE);
+		controlPanel = new ControlPanel(this);
+		processorPanel = new ProcessorViewPanel(machine);
+		menuBuilder = new MenuBarBuilder(this);
+		frame = new JFrame("Simulator");
+		JMenuBar bar = new JMenuBar();
+		frame.setJMenuBar(bar);
+		bar.add(menuBuilder.createFileMenu());
+		bar.add(menuBuilder.createExecuteMenu());
+
+		Container content = frame.getContentPane(); 
+		content.setLayout(new BorderLayout(1,1));
+		content.setBackground(Color.BLACK);
+		frame.setSize(1200,600);
+		frame.add(codeViewPanel.createCodeDisplay(), BorderLayout.LINE_START);
+		frame.add(processorPanel.createProcessorDisplay(),BorderLayout.PAGE_START);
+		JPanel center = new JPanel();
+		center.setLayout(new GridLayout(1,3));
+		center.add(memoryViewPanel1.createMemoryDisplay());
+		center.add(memoryViewPanel2.createMemoryDisplay());
+		center.add(memoryViewPanel3.createMemoryDisplay());
+		frame.add(center, BorderLayout.CENTER);
+		frame.add(controlPanel.createControlDisplay(), BorderLayout.PAGE_END);
+		// the next line will be commented or deleted later
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		//frame.addWindowListener(WindowListenerFactory.windowClosingFactory(e -> exit()));
+		frame.setLocationRelativeTo(null);
+		tUnit.start();
+		currentState.enter();
+		frame.setVisible(true);
+		notify("");
+	}
+
+
+	public void assembleFile() {
+		ioUnit.assembleFile();
+	}
+	
+	public void loadFile() {
+		ioUnit.loadFile();
+	}
+	
+	public void execute() {
+		while (currentState != States.PROGRAM_HALTED && 
+				currentState != States.NOTHING_LOADED) {
+			try {
+				machine.step();
+			} catch (CodeAccessException e) {
+				JOptionPane.showMessageDialog(frame, 
+					"Illegal access to code from line " + machine.getPC() + "\n"
+							+ "Exception message: " + e.getMessage(),
+							"Run time error",
+							JOptionPane.OK_OPTION);
+				System.out.println("Illegal access to code from line " + machine.getPC()); // just for debugging
+				System.out.println("Exception message: " + e.getMessage()); // just for debugging			
+			} catch(ArrayIndexOutOfBoundsException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"Illegal access to code from line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+				// similar JOPtionPane
+	// YOU HAVE TO FILL OUT ALL THESE CATCH BLOCKS WITH DIFFERENT MESSAGES
+			} catch(NullPointerException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"NullPointerException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(ParityCheckException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"ParityCheckException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(IllegalInstructionException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalInstructionException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"IllegalArgumentException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			} catch(DivideByZeroException e) {
+				JOptionPane.showMessageDialog(frame, 
+						"DivideByZeroException in the code at line " + machine.getPC() + "\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+			}
+			
+		}
+		notify("");
+	}
+	
+	public static void main(String[] args) {
+		/*
+		Machine machine = new Machine();
+		MemoryViewPanel panel = new MemoryViewPanel(machine, 0, 500);
 		JFrame frame = new JFrame("TEST");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400, 700);
 		frame.setLocationRelativeTo(null);
-		frame.add(panel.createCodeDisplay());
+		frame.add(panel.createMemoryDisplay());
 		frame.setVisible(true);
-		System.out.println(Loader.load(machine, new File("factorial.pexe")));
-		panel.update("Load Code");
+		System.out.println(Loader.load(machine, new File("test.pexe")));
+		panel.update("");
+		*/
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Mediator mediator = new Mediator();
+				Machine machine = 
+						new Machine(() -> 
+						mediator.setCurrentState(States.PROGRAM_HALTED));
+					mediator.setMachine(machine); //<<<<<CORRECTION
+					mediator.createAndShowGUI();
+			}
+		});
 	}
 }
