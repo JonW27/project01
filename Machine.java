@@ -62,7 +62,7 @@ public class Machine{
 		}
 	    });
 
-	ACTION.put(OPCODES.get("JPMZ"), instr -> {
+	ACTION.put(OPCODES.get("JMPZ"), instr -> {
 		int flags = instr.opcode & 6; // remove parity bit
 		if(cpu.accum == 0){
 		    if(flags == 0){
