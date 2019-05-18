@@ -1,6 +1,5 @@
 package projectview;
 
-import project.* ;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -61,7 +60,7 @@ public class CodeViewPanel {
 		//codeBinHex = new JTextField[(upper-lower)];
 		//codeText = new JTextField[(upper-lower)];
 		
-		for(int i = 0; i <= Memory.CODE_SIZE; i++) { //the for loop is from 0 to Memory.CODE_SIZE
+		for(int i = 0; i < Memory.CODE_SIZE; i++) { //the for loop is from 0 to Memory.CODE_SIZE
 			numPanel.add(new JLabel(i+": ", JLabel.RIGHT));
 			codeText[i] = new JTextField(10);
 			codeBinHex[i] = new JTextField(12);
