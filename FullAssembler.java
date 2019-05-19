@@ -12,154 +12,202 @@ import java.util.Scanner;
 public class FullAssembler implements Assembler{
 	// calls SimpleAssembler's assemble
 	// supposed to take several days
-	public int assemble(String f_name, String o_name, StringBuilder error){
+	public int assemble(String f_name, String o_name, StringBuilder error) {
+		if(error == null) 
+			throw new IllegalArgumentException("Coding error: the error buffer is null");
+	
+		List<String> code = new ArrayList<>();
+		List<String> data = new ArrayList<>();
+		
 		int retVal = 0;
-
-		try(Scanner sc = new Scanner(new File(f_name))){
-			ArrayList<String> f_contents = new ArrayList<String>();
-			boolean blankLine = false;
-			int firstBlankLine = 1;
-			int line_number = 0; // we will not zero index our lines apparently
-
-			// im going to presume that since readingCode is private, we need to construe our own.
-			boolean readingCode = true;
-
-			while(sc.hasNext()){
-				String line = sc.nextLine();
-				line_number++;
-				boolean detectedBlankLine = false; 
-				System.out.println("LINE: " + line);
-				if(!blankLine && line.trim().length() == 0){
-					blankLine = true;
-					detectedBlankLine = true;
-					firstBlankLine = line_number;
-				} else if(line.trim().length() == 0){
-				    detectedBlankLine = true;
-				}    
-				else if(blankLine && line.length() > 0){
-					error.append("Your pasm file indicates EOF termination at " + firstBlankLine + " , but the file stream does not end.\n");
-					retVal = line_number+1;
-					detectedBlankLine = true;
-					blankLine = false;
-				}
-				if(!detectedBlankLine && (line.charAt(0) == ' ' || line.charAt(0) == '\t')){
-					error.append("There is whitespace at the beginning of a non-empty line.\n");
-					retVal = line_number+1;
-				}
-				if(readingCode && !detectedBlankLine){
-					String[] parts = line.trim().split("\\s+");
-
-					if(line.trim().toUpperCase().equals("DATA")){
-					    if(!line.trim().equals("DATA")){
-						error.append(f_name + ":" + line_number + " The program line DATA must be in uppercase.\n");
-						retVal = line_number+1;
-					    } else if(line.trim().equals("DATA") && !readingCode){
-						error.append(f_name + ":" + line_number + " Found DATA, but pasm file was not readng code.\n");
-						retVal = line_number+1;
-					    }
-					    readingCode = false;
-					}
-					else if(!OPCODES.keySet().contains(parts[0].toUpperCase())){
-						error.append(f_name + ":" + line_number + " Illegal mnemonic.\n");
-						retVal = line_number+1;
-						System.out.println("illegal mnemonic");
-					}
-					else if(!parts[0].equals(parts[0].toUpperCase())){
-						error.append(f_name + ":" + line_number + " Mnemonic must be uppercase.\n");
-						retVal = line_number+1;
-					}
-					else if(Instruction.NO_ARG_MNEMONICS.contains(parts[0])) {
-						if( parts.length != 1){
-							error.append(f_name + ":" + line_number + " " + parts[0] + " takes no arguments\n");
-							retVal = line_number+1;
-						}
-					} 
-					else  { 
-						// if( !Instruction.NO_ARG_MNEMONICS.contains( parts[ 0 ] )) {
-						if(parts.length != 2){
-							error.append(f_name + ":" + line_number + " " + parts[0] + " has an invalid length of arguments. Should be 2.\n");
-							retVal = line_number+1;
-						} else{
-							if(parts[1].toUpperCase().startsWith("M")) {
-								if(!Instruction.IMM_MNEMONICS.contains(parts[0])) {
-									error.append(f_name + ":" + line_number + " " + parts[0] + " IMMEDIATEf arguments. Should be 2.\n");
-									retVal = line_number+1;
-								}
-								parts[1] = parts[1].substring(1);
-							} // then N and J
-							if(parts[1].toUpperCase().startsWith("N")) {
-								if(!Instruction.IND_MNEMONICS.contains(parts[0])) {
-									error.append(f_name + ":" + line_number + " " + parts[0] + " IMMEDIATEf arguments. Should be 2.\n");
-									retVal = line_number+1;
-								}
-								parts[1] = parts[1].substring(1);
-							}
-							if(parts[1].toUpperCase().startsWith("J")) {
-								if(!Instruction.JMP_MNEMONICS.contains(parts[0])) {
-									error.append(f_name + ":" + line_number + " " + parts[0] + " IMMEDIATEf arguments. Should be 2.\n");
-									retVal = line_number+1;
-								}
-								parts[1] = parts[1].substring(1);
-							}
-							try{
-								int arg = Integer.parseInt(parts[1], 16);
-							} catch(NumberFormatException e){
-								error.append(f_name + ":" + line_number + " argument is not a hex number\n");
-								retVal = line_number;
-							}
-						}
-					} 
-				} else if(!detectedBlankLine){ // reading data
-					String[] parts = line.trim().split("\\s+");
-					// give data format error in parts.length !=2
-					try{
-						int address = Integer.parseInt(parts[0], 16);
-					} catch(NumberFormatException e){
-						error.append(f_name + ":" + line_number + " data has non-numeric memory address\n");
-						retVal = line_number;
-					}
-					try{
-						int value = Integer.parseInt(parts[1], 16);
-					} catch(NumberFormatException e){
-						error.append("\n Error on line " + line_number + " : data has non-numeric memory value\n");
-						retVal = line_number;
-					} catch(ArrayIndexOutOfBoundsException e){
-					    error.append("\n Error on line " + line_number + " : data is missing values\n");
-					}
+		int lineNum = 0;
+ 
+		try (Scanner inp = new Scanner(new File(f_name))) {
+			
+			boolean blankLineFound = false; 
+			int firstBlankLineNum = 0; 
+			boolean readingCode = true; 
+		
+			while(inp.hasNextLine()) {
+				lineNum++;
+				String line = inp.nextLine();
+				System.out.println(lineNum + ": " + line); 
+				
+				if(line.trim().length() == 0) {
 					
+					if(!blankLineFound) {
+						blankLineFound=true;
+						
+						firstBlankLineNum=lineNum;
+						
+					}
 				}
 
-			}
-		} catch(FileNotFoundException e){
-			error.append("\nError: Unable to write the assembled program to the output file\n");
+				else {
+					
+					if(blankLineFound) {
+						error.append("Error on line " + (firstBlankLineNum )+ ":Illegal blank line in the source file\n");
+						retVal=firstBlankLineNum;
+						blankLineFound=false;
+					} 
+					if(line.charAt(0)==' ') {
+						error.append("Error on line " + lineNum + ":Line starts with illegal white space\n");
+						retVal = lineNum;
+					}
+					if(line.trim().toUpperCase().equals("DATA") ) {
+						if(!line.trim().equals("DATA")) {
+							error.append("Error on line " + lineNum + ": Line does not have DATA in upper case\n");
+							retVal = lineNum;
+						}
+						if(readingCode) {
+							readingCode = false;
+						}
+						else{
+							error.append("Error on line " + lineNum+ ": Duplicate DATA delimiter at the current line \n");
+						}
+					} 
+				}
+				if(readingCode) code.add(line.trim());
+				else data.add(line.trim());
+
+			} 
+		} catch (FileNotFoundException e) {
+			error.append("Unable to open the assembled file\n");
 			retVal = -1;
 		} 
-		/*catch(IOException e){
-			error.append("\nUnexplained IO Exception");
-			retVal = -1;
-		} */
-		catch(Exception e){
-			error.append("Could not read .pasm file\n");
-		}
 
-		/*if(retVal != 0){
+		lineNum = 0;
 
-			return new SimpleAssembler().assemble(f_name, f_name, error);
-			}*/
-		
-		if(error.length() == 0){
-			try{
-				int i = new SimpleAssembler().assemble(f_name, f_name, error);
-			} catch(Exception e){
-			    System.out.println(error);
+		for(String line : code) {
+			lineNum++;
+			if(line.length() == 0) continue;
+
+			String[] parts = line.split("\\s+");
+			
+			if(!Instruction.OPCODES.containsKey(parts[0].toUpperCase())) {
+				error.append("Error on line " + lineNum + 
+						": illegal mnemonic\n");
+				retVal = lineNum;				
+			}
+
+			else{
+
+				if(parts[0].compareTo(parts[0].toUpperCase())!=0) {
+					error.append("Error on line " + lineNum + 
+							": mnemonic must be upper case\n");
+					retVal = lineNum;				
+					parts[0]=parts[0].toUpperCase();
+				}
+				
+				if(Instruction.NO_ARG_MNEMONICS.contains(parts[0].toUpperCase())) {
+					if(parts.length > 1) {
+						error.append("Error on line " + lineNum + 
+								": mnemonic cannot take arguments \n");
+						retVal = lineNum;
+					}
+				}
+				
+				else {
+					if(parts.length > 2) {
+						error.append("Error on line " + lineNum + 
+								": there are too many arguments present \n");
+						retVal = lineNum;
+					}
+					else if(parts.length<2) {
+						error.append("Error on line " + lineNum + 
+								": the mnemonic is missing an argument \n");
+						retVal = lineNum;
+					}
+
+					else {
+						
+						if(parts[1].charAt(0) == 'M') {
+							if(!Instruction.IMM_MNEMONICS.contains(parts[0].toUpperCase())) {
+								error.append("Error on line " + lineNum + 
+										": this mnemonic does not allow immediate mode\n");
+								retVal = lineNum;
+							}
+							parts[1] = parts[1].substring(1);
+						}
+						else if(parts[1].charAt(0) =='N') {
+							if(!Instruction.IND_MNEMONICS.contains(parts[0].toUpperCase())) {
+								error.append("Error on line " + lineNum + 
+										": this mnemonic does not allow indirect mode\n");
+								retVal = lineNum;
+							}
+							parts[1] = parts[1].substring(1);
+						
+						} 
+						else if (parts[1].charAt(0) =='J') {
+							if(!Instruction.JMP_MNEMONICS.contains(parts[0].toUpperCase())) {
+								error.append("Error on line " + lineNum + 
+										": this mnemonic does not allow direct mode\n");
+								retVal = lineNum;
+							}
+							parts[1] = parts[1].substring(1);
+
+						}
+						try {
+							Integer.parseInt(parts[1],16); // test arg is in hex, base 16
+						}
+						catch(NumberFormatException e) {
+							error.append("Error on line " + lineNum + 
+									": argument is not a hex number\n");
+							retVal = lineNum;				
+						}
+					}
+				}
 			}
 		}
-		else{
-			System.out.println(error);
+
+		for(String line : data) {
+			lineNum++;
+			if(line.length() == 0 || line.toUpperCase().trim().equals("DATA")) continue;
+
+			String[] parts = line.split("\\s+");
+			if(parts.length < 2) {
+				error.append("Error on line " + lineNum + 
+						": data entry has too few numbers\n");
+				retVal = lineNum;	
+								
+			} 
+			else if(parts.length > 2) {
+				error.append("Error on line " + lineNum + 
+						": data entry has too many numbers\n");
+				retVal = lineNum;
+				
+			}
+			else {
+				try {
+					 Integer.parseInt(parts[0],16);
+				} catch(NumberFormatException e) {
+					error.append("Error on line " + lineNum + 
+						": data has non-numeric memory address\n");
+					retVal =lineNum;				
+				}
+				try {
+					 Integer.parseInt(parts[1],16);
+				
+			} catch(NumberFormatException e) {
+				error.append("Error on line " + lineNum + 
+					": data has non-numeric memory value \n");
+				retVal = lineNum;				
+			}
+
+			}
 		}
+		
+		if(retVal == 0) {
+			new SimpleAssembler().assemble(f_name, o_name	, error);
+		}
+		
+		else {
+			System.out.println("\n" + error.toString());
+		}
+
 		return retVal;
 	}
-
+	
 	public static void main(String[] args) {
 		StringBuilder error = new StringBuilder();
         System.out.println("Enter the name of the file without extension: ");
