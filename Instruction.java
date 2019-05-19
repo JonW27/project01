@@ -66,9 +66,10 @@ public class Instruction{
 	return build.toString().toUpperCase();
     }
 
-    public static boolean noArgument(Instruction instr){
-	return instr.opcode < 24;
-    }
+	public static boolean noArgument(Instruction instr) {
+		if(instr.opcode < 24) return true;
+		return false;
+	}
 
     static int numOnes(int k){
 	String binary_rep = Integer.toUnsignedString(k,2);
