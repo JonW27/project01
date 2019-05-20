@@ -4,7 +4,7 @@ package project;
 import static project.Instruction.OPCODES;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileNotFoundException; 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -64,133 +64,132 @@ public class FullAssembler implements Assembler{
 				}
 
 				else {
-					if(blankLineFound) {
-						error.append("Error on line " + (firstBlankLineNumber )+ ":Illegal blank line in the source file\n");
-						retVal=firstBlankLineNumber;
-						blankLineFound=false;
-					} 
-					if(line.charAt(0)==' ') {
-						error.append("Error on line " + lineNumber + ":Line starts with illegal white space\n");
+				if(blankLineFound) {
+					error.append("Error on line " + (firstBlankLineNumber )+ ":Illegal blank line in the source file\n");
+					retVal=firstBlankLineNumber;
+					blankLineFound=false;
+				} 
+				if(line.charAt(0)==' ') {
+					error.append("Error on line " + lineNumber + ":Line starts with illegal white space\n");
+					retVal = lineNumber;
+				}
+				if(line.trim().toUpperCase().equals("DATA") ) {
+					if(!line.trim().equals("DATA")) {
+						error.append("Error on line " + lineNumber + ": Line does not have DATA in upper case\n");
 						retVal = lineNumber;
 					}
-					if(line.trim().toUpperCase().equals("DATA") ) {
-						if(!line.trim().equals("DATA")) {
-							error.append("Error on line " + lineNumber + ": Line does not have DATA in upper case\n");
-							retVal = lineNumber;
-						}
-						if(readingCode) {
-							readingCode = false;
-						}
-						else{
-							error.append("Error on line " + lineNumber+ ": Duplicate DATA delimiter at the current line \n");
+					if(readingCode) {
+						readingCode = false;
+					}
+					else{
+						error.append("Error on line " + lineNumber+ ": Duplicate DATA delimiter at the current line \n");
 						}
 					} 
 				}
+				
 				if(readingCode) code.add(line.trim());
+				
 				else data.add(line.trim());
-
-			} 
-		} catch (FileNotFoundException e) {
-			error.append("Unable to open the assembled file\n");
-			retVal = -1;
-		} 
-		lineNumber = 0;
-		for(String line : code) {
-			lineNumber++;
-			if(line.length() == 0) continue;
-
-			String[] parts = line.split("\\s+");
+				} 
 			
-			if(!Instruction.OPCODES.containsKey(parts[0].toUpperCase())) {
-				error.append("Error on line " + lineNumber + 
-						": illegal mnemonic\n");
-				retVal = lineNumber;				
+				} catch (FileNotFoundException e) {
+		error.append("Unable to open the assembled file\n");
+		retVal = -1;
+	} 
+	lineNumber = 0;
+	
+	for(String line : code) {
+		lineNumber++;
+		if(line.length() == 0) continue;
+		
+		String[] parts = line.split("\\s+");
+			
+		if(!Instruction.OPCODES.containsKey(parts[0].toUpperCase())) {
+			error.append("Error on line " + lineNumber + ": illegal mnemonic\n");
+			retVal = lineNumber;				
 			}
 
 			else{
 
 				if(parts[0].compareTo(parts[0].toUpperCase())!=0) {
-					error.append("Error on line " + lineNumber + 
-							": mnemonic must be upper case\n");
+					error.append("Error on line " + lineNumber + ": mnemonic must be upper case\n");
 					retVal = lineNumber;				
 					parts[0]=parts[0].toUpperCase();
 				}
 				
 				if(Instruction.NO_ARG_MNEMONICS.contains(parts[0].toUpperCase())) {
+					
 					if(parts.length > 1) {
-						error.append("Error on line " + lineNumber + 
-								": mnemonic cannot take arguments \n");
+						error.append("Error on line " + lineNumber + ": mnemonic cannot take arguments \n");
 						retVal = lineNumber;
 					}
 				}
 				
+			else {
+				if(parts.length > 2) {
+					error.append("Error on line " + lineNumber + ": there are too many arguments present \n");
+					retVal = lineNumber;
+				}
+				
+				else if(parts.length<2) {
+					error.append("Error on line " + lineNumber + ": the mnemonic is missing an argument \n");
+					retVal = lineNumber;
+				}
+
 				else {
-					if(parts.length > 2) {
-						error.append("Error on line " + lineNumber + 
-								": there are too many arguments present \n");
-						retVal = lineNumber;
-					}
-					else if(parts.length<2) {
-						error.append("Error on line " + lineNumber + 
-								": the mnemonic is missing an argument \n");
-						retVal = lineNumber;
-					}
-
-					else {
 						
-						if(parts[1].charAt(0) == 'M') {
-							if(!Instruction.IMM_MNEMONICS.contains(parts[0].toUpperCase())) {
-								error.append("Error on line " + lineNumber + 
-										": this mnemonic does not allow immediate mode\n");
-								retVal = lineNumber;
-							}
-							parts[1] = parts[1].substring(1);
+					if(parts[1].charAt(0) == 'M') {
+						if(!Instruction.IMM_MNEMONICS.contains(parts[0].toUpperCase())) {
+							error.append("Error on line " + lineNumber + ": this mnemonic does not allow immediate mode\n");
+							retVal = lineNumber;
 						}
-						else if(parts[1].charAt(0) =='N') {
-							if(!Instruction.IND_MNEMONICS.contains(parts[0].toUpperCase())) {
-								error.append("Error on line " + lineNumber + 
-										": this mnemonic does not allow indirect mode\n");
-								retVal = lineNumber;
-							}
-							parts[1] = parts[1].substring(1);
+						parts[1] = parts[1].substring(1);
+					}
+					
+					else if(parts[1].charAt(0) =='N') {
+						if(!Instruction.IND_MNEMONICS.contains(parts[0].toUpperCase())) {
+							error.append("Error on line " + lineNumber + ": this mnemonic does not allow indirect mode\n");
+							retVal = lineNumber;
+						}
+						parts[1] = parts[1].substring(1);
 						
-						} 
-						else if (parts[1].charAt(0) =='J') {
-							if(!Instruction.JMP_MNEMONICS.contains(parts[0].toUpperCase())) {
-								error.append("Error on line " + lineNumber + 
-										": this mnemonic does not allow direct mode\n");
-								retVal = lineNumber;
-							}
-							parts[1] = parts[1].substring(1);
+					}
+						
+					else if (parts[1].charAt(0) =='J') {
+						if(!Instruction.JMP_MNEMONICS.contains(parts[0].toUpperCase())) {
+							error.append("Error on line " + lineNumber + ": this mnemonic does not allow direct mode\n");
+							retVal = lineNumber;
+						}
+						parts[1] = parts[1].substring(1);
 
-						}
-						try {
-							Integer.parseInt(parts[1],16); // test arg is in hex, base 16
-						}
-						catch(NumberFormatException e) {
-							error.append("Error on line " + lineNumber + 
-									": argument is not a hex number\n");
-							retVal = lineNumber;				
-						}
+					}
+						
+					try {
+						Integer.parseInt(parts[1],16); // test arg is in hex, base 16
+					}
+					catch(NumberFormatException e) {
+						error.append("Error on line " + lineNumber + ": argument is not a hex number\n");
+						retVal = lineNumber;				
 					}
 				}
 			}
 		}
+	}
 
 		for(String line : data) {
 			lineNumber++;
 			if(line.length() == 0 || line.toUpperCase().trim().equals("DATA")) continue;
-
+			
 			String[] parts = line.split("\\s+");
+			
 			if(parts.length < 2) {
-				error.append("Error on line " + lineNumber + 
-						": data entry has too few numbers\n");
+				error.append("Error on line " + lineNumber + ": data entry has too few numbers\n");
 				retVal = lineNumber;	
 								
 			} 
+			
 			else if(parts.length > 2) {
-				error.append("Error on line " + lineNumber + 
-						": data entry has too many numbers\n");
+				error.append("Error on line " + lineNumber + ": data entry has too many numbers\n");
 				retVal = lineNumber;
 				
 			}
@@ -198,16 +197,13 @@ public class FullAssembler implements Assembler{
 				try {
 					 Integer.parseInt(parts[0],16);
 				} catch(NumberFormatException e) {
-					error.append("Error on line " + lineNumber + 
-						": data has non-numeric memory address\n");
+					error.append("Error on line " + lineNumber + ": data has non-numeric memory address\n");
 					retVal =lineNumber;				
 				}
 				try {
 					 Integer.parseInt(parts[1],16);
-				
 			} catch(NumberFormatException e) {
-				error.append("Error on line " + lineNumber + 
-					": data has non-numeric memory value \n");
+				error.append("Error on line " + lineNumber + ": data has non-numeric memory value \n");
 				retVal = lineNumber;				
 			}
 			}
