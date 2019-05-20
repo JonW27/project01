@@ -77,22 +77,22 @@ public class FullAssembler implements Assembler{
 					if(!line.trim().equals("DATA")) {
 						error.append("Error on line " + lineNumber + ": Line does not have DATA in upper case\n");
 						retVal = lineNumber;
-					}
-					if(readingCode) {
-						readingCode = false;
-					}
-					else{
-						error.append("Error on line " + lineNumber+ ": Duplicate DATA delimiter at the current line \n");
-						}
-					} 
 				}
-				
-				if(readingCode) code.add(line.trim());
-				
-				else data.add(line.trim());
+				if(readingCode) {
+					readingCode = false;
+				}
+				else{
+					error.append("Error on line " + lineNumber+ ": Duplicate DATA delimiter at the current line \n");
+					}
 				} 
+			}
+				
+			if(readingCode) code.add(line.trim());
+				
+			else data.add(line.trim());
+			} 
 			
-				} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 		error.append("Unable to open the assembled file\n");
 		retVal = -1;
 	} 
@@ -206,8 +206,8 @@ public class FullAssembler implements Assembler{
 				error.append("Error on line " + lineNumber + ": data has non-numeric memory value \n");
 				retVal = lineNumber;				
 			}
-			}
 		}
+	}
 		
 		if(retVal == 0) {
 			new SimpleAssembler().assemble(inputFileName, outputFileName, error);
