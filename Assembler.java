@@ -1,6 +1,8 @@
 package project;
 
 public interface Assembler {
+	
+	Set<String> noArgument = Set.of("Halt", "Nop", "Not");
 
 	class DataPair {
 		protected int address ;
