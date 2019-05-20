@@ -1,99 +1,89 @@
+
 package project;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
-public class Memory{
-    public static final int DATA_SIZE = 512;
-    public static final int CODE_SIZE = 256;
-    
-    private int[] data = new int[DATA_SIZE];
-    private List<Instruction> code = new ArrayList<>();
-    private int changedDataIndex = -1;
+public class Memory {
 
-    int[] getData(int min, int max){
-	if(min < 0 || max > DATA_SIZE - 1){
-	    throw new DataAccessException("Array index is out of limits");
+	public static final int DATA_SIZE = 512;
+	private int[]  data = new int[DATA_SIZE];
+	public static final int CODE_SIZE =256;
+	public List<Instruction> code = new ArrayList<>();
+	public int changedDataIndex =-1;
+	
+	int[] getData(int min, int max) {
+		if(min < 0 || min > DATA_SIZE - 1 || max < 0 || max > DATA_SIZE - 1) throw new DataAccessException("Index given is out of the range of the limits");
+		return Arrays.copyOfRange(data, min, max);
 	}
-	return Arrays.copyOfRange(data, min, max);
-    }
-
-    int[] getData(){
-	return data;
-    }
-
-    int getData(int index){
-	isValidIndex(index);
-	return data[index];
-    }
-
-    void setData(int index, int value){
-	isValidIndex(index);
-	data[index] = value;
-	changedDataIndex = index;
-    }
-
-    int getChangedDataIndex(){
-	return changedDataIndex;
-    }
-
-    List<Instruction> getCode(){
-	return code;
-    }
-
-    Instruction getCode(int index){
-	isValidCodeIndex(index);
-	return code.get(index);
-    }
-
-    public Instruction[] getCode(int min, int max){
-	// isValidCodeIndex(index); // index is not a local var
-	if( 0 > min || min > max || max >= code.size() ) {
-		throw new CodeAccessException( "Illegal access to code." ) ;
+	
+	int[] getData() {
+		return data;
 	}
-    Instruction[] temp = {};
-	temp = code.toArray(temp);
-	return Arrays.copyOfRange(temp, min, max);
-    }
-
-    void addCode(Instruction value){
-	if(code.size() >= CODE_SIZE){
-	    return;
-	} else{
-	    code.add(value);
+	
+	int getData(int index) {
+		if(index < 0 || index > DATA_SIZE - 1) throw new DataAccessException("Index given is out of the range of the limits");
+		return data[index];
 	}
-    }
-
-    void setCode(int index, Instruction instr){
-	isValidIndex(index);
-	code.set(index, instr);
-    }
-
-    void clearCode(){
-	code.clear();
-    }
-
-    int getProgramSize(){
-	return code.size();
-    }
-
-    void clearData(){
-	data = new int[DATA_SIZE];
-	changedDataIndex = -1;
-    }
-
-    void isValidIndex(int index){
-	if(index < 0 || index > DATA_SIZE - 1){
-	    throw new DataAccessException("Array index is out of limits");
+	
+	void setData(int index, int value) {
+		if(index < 0 || index > DATA_SIZE - 1) throw new DataAccessException("Index given is out of the range of the limits");
+		data[index] = value;
+		changedDataIndex = index;
 	}
-    }
-
-    void isValidCodeIndex(int index){
-	if(0 > index || code.size() <= index){
-	    throw new CodeAccessException("Illegal access to code.");
+	
+	void setChangedDataIndex(int changedDataIndex) {
+		this.changedDataIndex = changedDataIndex;
 	}
-    }
-}	    
+	
+	void clearData() {
+		for(int i = 0; i < data.length; i++) {
+			data[i] = 0;
+		}
+		changedDataIndex = -1;
+	}
+	
+	List<Instruction> getCode(){
+		return code;
+	}
+	
+	Instruction getCode(int index) {
+		if(!(0 <= index ||index < code.size())) throw new CodeAccessException("Illegal access to code");
+		return code.get(index);
+	}
+	
+	public Instruction[] getCode(int min, int max) {
+		// throw CodeAccessException if it is NOT true 
+		// that 0 <= min <= max < code.size()
+		if(!(0 <= min || min <= max || max < code.size())) throw new CodeAccessException("Illegal access to code");
+			Instruction[] temp = {};
+			temp = code.toArray(temp);
+			return Arrays.copyOfRange(temp, min, max); 
+		}
+	
+	void addCode(Instruction value) {
+		if(code.size() < CODE_SIZE) {
+			code.add(value);
+		}
+	}
+	
+	void setCode(int index, Instruction instr) {
+		if(!(0 <= index || index < code.size())) throw new CodeAccessException("Illegal access to code");
+		code.set(index, instr);
+	}
+	
+	void clearCode() {
+		code.clear();
+	}
+	
+	int getProgramSize() {
+		return code.size();
+	}
 
-    
+	int getChangedDataIndex() {
+		return changedDataIndex;
+	}
+
+
+}
