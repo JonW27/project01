@@ -43,7 +43,6 @@ public class FullAssembler implements Assembler{
 	
 		List<String> code = new ArrayList<>();
 		List<String> data = new ArrayList<>();
-		
 		int retVal = 0;
 		int lineNumber = 0;
  
@@ -57,19 +56,14 @@ public class FullAssembler implements Assembler{
 				lineNumber++;
 				String line = src.nextLine();
 				System.out.println(lineNumber + ": " + line); 
-				
 				if(line.trim().length() == 0) {
-					
 					if(!blankLineFound) {
 						blankLineFound=true;
-						
-						firstBlankLineNumber=lineNumber;
-						
+						firstBlankLineNumber=lineNumber;	
 					}
 				}
 
 				else {
-					
 					if(blankLineFound) {
 						error.append("Error on line " + (firstBlankLineNumber )+ ":Illegal blank line in the source file\n");
 						retVal=firstBlankLineNumber;
@@ -100,9 +94,7 @@ public class FullAssembler implements Assembler{
 			error.append("Unable to open the assembled file\n");
 			retVal = -1;
 		} 
-
 		lineNumber = 0;
-
 		for(String line : code) {
 			lineNumber++;
 			if(line.length() == 0) continue;
@@ -218,18 +210,15 @@ public class FullAssembler implements Assembler{
 					": data has non-numeric memory value \n");
 				retVal = lineNumber;				
 			}
-
 			}
 		}
 		
 		if(retVal == 0) {
 			new SimpleAssembler().assemble(inputFileName, outputFileName, error);
 		}
-		
 		else {
 			System.out.println("\n" + error.toString());
 		}
-
 		return retVal;
 	}
 	
