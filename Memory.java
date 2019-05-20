@@ -49,14 +49,14 @@ public class Memory {
 	}
 	
 	Instruction getCode(int index) {
-		if(!(0 <= index ||index < code.size())) throw new CodeAccessException("Illegal access to code");
+		if( index<0  && index> code.size()) throw new CodeAccessException("Illegal access to code");
 		return code.get(index);
 	}
 	
 	public Instruction[] getCode(int min, int max) {
 		// throw CodeAccessException if it is NOT true 
 		// that 0 <= min <= max < code.size()
-		if(!(0 <= min || min <= max || max < code.size())) throw new CodeAccessException("Illegal access to code");
+		if( min < 0 && min > max && max >= code.size()) throw new CodeAccessException("Illegal access to code");
 			Instruction[] temp = {};
 			temp = code.toArray(temp);
 			return Arrays.copyOfRange(temp, min, max); 
@@ -69,7 +69,7 @@ public class Memory {
 	}
 	
 	void setCode(int index, Instruction instr) {
-		if(!(0 <= index || index < code.size())) throw new CodeAccessException("Illegal access to code");
+		if( index<0  && index> code.size()) throw new CodeAccessException("Illegal access to code");
 		code.set(index, instr);
 	}
 	
